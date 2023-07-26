@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import Section from './Section';
 import FeedbackOptions from './FeedbackOptions';
 import Statistics from './Statistics';
@@ -8,29 +8,30 @@ import {
   countTotalFeedback,
 } from './helpersMethods/helpers';
 
-export class App extends Component {
-  state = {
+export default function App() {
+  const [states, setStates] = useState({
     good: 0,
     neutral: 0,
     bad: 0,
-  };
+  });
 
-  onButtonClick = (event) => {
+    const onButtonClick = (event) => {
     const feedbackType = event.target.name;
-    this.setState(prevState => {
-      return { [feedbackType]: prevState[feedbackType] + 1 };
+    setStates(prevState => {
+      return { ...prevState, [feedbackType]: prevState[feedbackType] + 1 };
     });
   };
 
-  render() {
+  const arrNamesOptions = Object.keys(states);
+
     return (
-      <Section title="Please leave feedback" {...this.props}>
-        <FeedbackOptions options={this.state} onButtonClick={this.onButtonClick} />
-        {countTotalFeedback(this.state) ? (
+      <Section title="Please leave feedback">
+        <FeedbackOptions options={arrNamesOptions} onButtonClick={onButtonClick} />
+        {countTotalFeedback(states) ? (
           <Statistics
-            stats={this.state}
-            total={countTotalFeedback(this.state)}
-            percentage={countPositiveFeedbackPercentage(this.state)}
+            stats={states}
+            total={countTotalFeedback(states)}
+            percentage={countPositiveFeedbackPercentage(states)}
           />
         ) : (
           <Notification message="There is no feedback" />
@@ -38,4 +39,4 @@ export class App extends Component {
       </Section>
     );
   }
-}
+
